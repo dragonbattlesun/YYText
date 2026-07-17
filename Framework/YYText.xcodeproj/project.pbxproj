@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A17E57010000000000000006 /* YYTextLayoutComposedCharacterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000003 /* YYTextLayoutComposedCharacterTests.m */; };
 		A17E57010000000000000013 /* YYTextLayoutCaretTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000012 /* YYTextLayoutCaretTests.m */; };
+		A17E57010000000000000015 /* YYTextLayoutContainersTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000014 /* YYTextLayoutContainersTests.m */; };
+		A17E57010000000000000017 /* YYTextLayoutSwiftImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000016 /* YYTextLayoutSwiftImportTests.swift */; };
 		A17E57010000000000000007 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000005 /* XCTest.framework */; };
 		A17E57010000000000000008 /* YYText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D918BFD61F372E3000106E14 /* YYText.framework */; };
 		D995E6BA1F372EC800EBEE44 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D918BFE71F372EA000106E14 /* MobileCoreServices.framework */; };
@@ -84,6 +86,8 @@
 		A17E57010000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A17E57010000000000000005 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 		A17E57010000000000000012 /* YYTextLayoutCaretTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YYTextLayoutCaretTests.m; sourceTree = "<group>"; };
+		A17E57010000000000000014 /* YYTextLayoutContainersTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YYTextLayoutContainersTests.m; sourceTree = "<group>"; };
+		A17E57010000000000000016 /* YYTextLayoutSwiftImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YYTextLayoutSwiftImportTests.swift; sourceTree = "<group>"; };
 		D918BFD61F372E3000106E14 /* YYText.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YYText.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D918BFDA1F372E3000106E14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D918BFE21F372E6800106E14 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -208,6 +212,8 @@
 			children = (
 				A17E57010000000000000003 /* YYTextLayoutComposedCharacterTests.m */,
 				A17E57010000000000000012 /* YYTextLayoutCaretTests.m */,
+				A17E57010000000000000014 /* YYTextLayoutContainersTests.m */,
+				A17E57010000000000000016 /* YYTextLayoutSwiftImportTests.swift */,
 				A17E57010000000000000004 /* Info.plist */,
 			);
 			name = Tests;
@@ -425,6 +431,8 @@
 			files = (
 				A17E57010000000000000006 /* YYTextLayoutComposedCharacterTests.m in Sources */,
 				A17E57010000000000000013 /* YYTextLayoutCaretTests.m in Sources */,
+				A17E57010000000000000015 /* YYTextLayoutContainersTests.m in Sources */,
+				A17E57010000000000000017 /* YYTextLayoutSwiftImportTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,6 +481,7 @@
 		A17E5701000000000000000F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPINTENTS_METADATA_EXTRACTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGNING_ALLOWED = NO;
@@ -482,6 +491,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibireme.YYTextTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -489,6 +499,7 @@
 		A17E57010000000000000010 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPINTENTS_METADATA_EXTRACTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGNING_ALLOWED = NO;
@@ -498,6 +509,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibireme.YYTextTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

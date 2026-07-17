@@ -170,7 +170,8 @@ extern const CGSize YYTextContainerMaxSize;
  @param text The text (if nil, returns nil).
  @return A new layout, or nil when an error occurs.
 */
-+ (nullable YYTextLayout *)layoutWithContainerSize:(CGSize)size text:(NSAttributedString *)text;
++ (nullable YYTextLayout *)layoutWithContainerSize:(CGSize)size text:(NSAttributedString *)text
+    NS_SWIFT_NAME(layout(containerSize:text:));
 
 /**
  Generate a layout with the given container and text.
@@ -179,7 +180,8 @@ extern const CGSize YYTextContainerMaxSize;
  @param text      The text (if nil, returns nil).
  @return A new layout, or nil when an error occurs.
  */
-+ (nullable YYTextLayout *)layoutWithContainer:(YYTextContainer *)container text:(NSAttributedString *)text;
++ (nullable YYTextLayout *)layoutWithContainer:(YYTextContainer *)container text:(NSAttributedString *)text
+    NS_SWIFT_NAME(layout(container:text:));
 
 /**
  Generate a layout with the given container and text.
@@ -190,7 +192,8 @@ extern const CGSize YYTextContainerMaxSize;
     length of the range is 0, it means the length is no limit.
  @return A new layout, or nil when an error occurs.
  */
-+ (nullable YYTextLayout *)layoutWithContainer:(YYTextContainer *)container text:(NSAttributedString *)text range:(NSRange)range;
++ (nullable YYTextLayout *)layoutWithContainer:(YYTextContainer *)container text:(NSAttributedString *)text range:(NSRange)range
+    NS_SWIFT_NAME(layout(container:text:range:));
 
 /**
  Generate layouts with the given containers and text.
@@ -201,7 +204,8 @@ extern const CGSize YYTextContainerMaxSize;
     or nil when an error occurs.
  */
 + (nullable NSArray<YYTextLayout *> *)layoutWithContainers:(NSArray<YYTextContainer *> *)containers
-                                                      text:(NSAttributedString *)text;
+                                                      text:(NSAttributedString *)text
+    NS_SWIFT_NAME(layouts(containers:text:));
 
 /**
  Generate layouts with the given containers and text.
@@ -215,7 +219,8 @@ extern const CGSize YYTextContainerMaxSize;
  */
 + (nullable NSArray<YYTextLayout *> *)layoutWithContainers:(NSArray<YYTextContainer *> *)containers
                                                       text:(NSAttributedString *)text
-                                                     range:(NSRange)range;
+                                                     range:(NSRange)range
+    NS_SWIFT_NAME(layouts(containers:text:range:));
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
 + (instancetype)new UNAVAILABLE_ATTRIBUTE;

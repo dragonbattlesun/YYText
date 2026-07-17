@@ -949,6 +949,7 @@ fail:
         YYTextContainer *container = containers[i];
         YYTextLayout *layout = [self layoutWithContainer:container text:text range:range];
         if (!layout) return nil;
+        [layouts addObject:layout];
         NSInteger length = (NSInteger)range.length - (NSInteger)layout.visibleRange.length;
         if (length <= 0) {
             range.length = 0;

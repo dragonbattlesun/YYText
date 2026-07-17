@@ -348,6 +348,39 @@ dispatch_semaphore_signal(_lock);
 @end
 
 
+static void YYTextNormalizeComposedCharacterAttributes(NSMutableAttributedString *text) {
+    if (text.length < 2) return;
+
+    NSString *string = text.string;
+    NSMutableOrderedSet<NSValue *> *ranges = [NSMutableOrderedSet orderedSet];
+    NSRange fullRange = NSMakeRange(0, text.length);
+
+    [text enumerateAttributesInRange:fullRange
+                             options:0
+                          usingBlock:^(NSDictionary *attributes,
+                                       NSRange range,
+                                       BOOL *stop) {
+        (void)attributes;
+        (void)stop;
+        NSUInteger boundary = NSMaxRange(range);
+        if (boundary == 0 || boundary >= text.length) return;
+
+        NSRange composedRange =
+            [string rangeOfComposedCharacterSequenceAtIndex:boundary];
+        if (composedRange.location < boundary) {
+            [ranges addObject:[NSValue valueWithRange:composedRange]];
+        }
+    }];
+
+    for (NSValue *value in ranges) {
+        NSRange range = value.rangeValue;
+        NSDictionary *attributes =
+            [text attributesAtIndex:range.location effectiveRange:NULL];
+        [text setAttributes:attributes range:range];
+    }
+}
+
+
 
 @implementation YYTextLayout
 
@@ -398,6 +431,7 @@ dispatch_semaphore_signal(_lock);
     container = container.copy;
     if (!text || !container) return nil;
     if (range.location + range.length > text.length) return nil;
+    YYTextNormalizeComposedCharacterAttributes((NSMutableAttributedString *)text);
     container->_readonly = YES;
     maximumNumberOfRows = container.maximumNumberOfRows;
     

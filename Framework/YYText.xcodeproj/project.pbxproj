@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A17E57010000000000000006 /* YYTextLayoutComposedCharacterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000003 /* YYTextLayoutComposedCharacterTests.m */; };
+		A17E57010000000000000007 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17E57010000000000000005 /* XCTest.framework */; };
+		A17E57010000000000000008 /* YYText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D918BFD61F372E3000106E14 /* YYText.framework */; };
 		D995E6BA1F372EC800EBEE44 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D918BFE71F372EA000106E14 /* MobileCoreServices.framework */; };
 		D995E6BB1F372EC800EBEE44 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D918BFE61F372E9B00106E14 /* Accelerate.framework */; };
 		D995E6BC1F372EC800EBEE44 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D918BFE51F372E9800106E14 /* CoreText.framework */; };
@@ -64,7 +67,21 @@
 		D995E7251F372ED100EBEE44 /* YYTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = D995E6F41F372ED100EBEE44 /* YYTextView.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A17E5701000000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D918BFCD1F372E3000106E14 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D918BFD51F372E3000106E14;
+			remoteInfo = YYText;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		A17E57010000000000000002 /* YYTextTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YYTextTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A17E57010000000000000003 /* YYTextLayoutComposedCharacterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YYTextLayoutComposedCharacterTests.m; sourceTree = "<group>"; };
+		A17E57010000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A17E57010000000000000005 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 		D918BFD61F372E3000106E14 /* YYText.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YYText.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D918BFDA1F372E3000106E14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D918BFE21F372E6800106E14 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -125,6 +142,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A17E5701000000000000000A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A17E57010000000000000007 /* XCTest.framework in Frameworks */,
+				A17E57010000000000000008 /* YYText.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D918BFD21F372E3000106E14 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -145,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				D995E6C01F372ED100EBEE44 /* YYText */,
+				A17E5701000000000000000C /* Tests */,
 				D918BFE11F372E6800106E14 /* Frameworks */,
 				D918BFD71F372E3000106E14 /* Products */,
 			);
@@ -154,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				D918BFD61F372E3000106E14 /* YYText.framework */,
+				A17E57010000000000000002 /* YYTextTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				D918BFDA1F372E3000106E14 /* Info.plist */,
+				A17E57010000000000000005 /* XCTest.framework */,
 				D918BFE71F372EA000106E14 /* MobileCoreServices.framework */,
 				D918BFE61F372E9B00106E14 /* Accelerate.framework */,
 				D918BFE51F372E9800106E14 /* CoreText.framework */,
@@ -170,6 +199,16 @@
 				D918BFE21F372E6800106E14 /* CoreFoundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A17E5701000000000000000C /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A17E57010000000000000003 /* YYTextLayoutComposedCharacterTests.m */,
+				A17E57010000000000000004 /* Info.plist */,
+			);
+			name = Tests;
+			path = ../Tests;
 			sourceTree = "<group>";
 		};
 		D995E6C01F372ED100EBEE44 /* YYText */ = {
@@ -291,6 +330,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		A17E57010000000000000001 /* YYTextTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A17E57010000000000000011 /* Build configuration list for PBXNativeTarget "YYTextTests" */;
+			buildPhases = (
+				A17E57010000000000000009 /* Sources */,
+				A17E5701000000000000000A /* Frameworks */,
+				A17E5701000000000000000B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A17E5701000000000000000E /* PBXTargetDependency */,
+			);
+			name = YYTextTests;
+			productName = YYTextTests;
+			productReference = A17E57010000000000000002 /* YYTextTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D918BFD51F372E3000106E14 /* YYText */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D918BFDE1F372E3000106E14 /* Build configuration list for PBXNativeTarget "YYText" */;
@@ -336,11 +393,19 @@
 			projectRoot = "";
 			targets = (
 				D918BFD51F372E3000106E14 /* YYText */,
+				A17E57010000000000000001 /* YYTextTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A17E5701000000000000000B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D918BFD41F372E3000106E14 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -351,6 +416,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A17E57010000000000000009 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A17E57010000000000000006 /* YYTextLayoutComposedCharacterTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D918BFD11F372E3000106E14 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -384,7 +457,47 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A17E5701000000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D918BFD51F372E3000106E14 /* YYText */;
+			targetProxy = A17E5701000000000000000D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A17E5701000000000000000F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/../Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibireme.YYTextTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A17E57010000000000000010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/../Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibireme.YYTextTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D918BFDC1F372E3000106E14 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -532,6 +645,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A17E57010000000000000011 /* Build configuration list for PBXNativeTarget "YYTextTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A17E5701000000000000000F /* Debug */,
+				A17E57010000000000000010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D918BFD01F372E3000106E14 /* Build configuration list for PBXProject "YYText" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -28,6 +28,15 @@
     return layout;
 }
 
+- (YYTextLayout *)layoutForText:(NSAttributedString *)text range:(NSRange)range {
+    YYTextContainer *container =
+        [YYTextContainer containerWithSize:CGSizeMake(500, 500)];
+    YYTextLayout *layout =
+        [YYTextLayout layoutWithContainer:container text:text range:range];
+    XCTAssertNotNil(layout);
+    return layout;
+}
+
 - (void)assertLayout:(YYTextLayout *)layout
  hasUniformAttributesInRange:(NSRange)range {
     NSDictionary *expected =
@@ -59,36 +68,47 @@
     }
 }
 
-- (void)assertNormalizesSplitComposedString:(NSString *)string
-                            atUTF16Location:(NSUInteger)location {
-    NSString *originalString = [string copy];
+- (YYTextLayout *)assertNormalizesSource:(NSMutableAttributedString *)source
+                           composedRange:(NSRange)range
+                sourceAttributeLocations:(NSArray<NSNumber *> *)locations
+                             layoutRange:(NSRange)layoutRange {
+    NSString *originalString = [source.string copy];
     NSData *originalScalars =
         [originalString dataUsingEncoding:NSUTF32LittleEndianStringEncoding];
-    NSMutableAttributedString *source =
-        [self splitText:originalString atUTF16Location:location];
     NSDictionary *firstAttributes =
-        [source attributesAtIndex:0 effectiveRange:NULL];
-    NSDictionary *splitAttributes =
-        [source attributesAtIndex:location effectiveRange:NULL];
+        [source attributesAtIndex:range.location effectiveRange:NULL];
+    NSMutableArray<NSDictionary *> *originalAttributes =
+        [NSMutableArray arrayWithCapacity:locations.count];
+    BOOL hasDifferentAttributes = NO;
+    for (NSNumber *location in locations) {
+        NSDictionary *attributes =
+            [source attributesAtIndex:location.unsignedIntegerValue
+                       effectiveRange:NULL];
+        [originalAttributes addObject:attributes];
+        if (![attributes isEqual:firstAttributes]) {
+            hasDifferentAttributes = YES;
+        }
+    }
 
-    YYTextLayout *layout = [self layoutForText:source];
-    NSRange range =
-        [originalString rangeOfComposedCharacterSequenceAtIndex:0];
+    YYTextLayout *layout = [self layoutForText:source range:layoutRange];
 
-    XCTAssertTrue(NSEqualRanges(range, NSMakeRange(0, originalString.length)));
+    XCTAssertTrue(hasDifferentAttributes);
     XCTAssertEqualObjects([layout.text attributesAtIndex:range.location
                                            effectiveRange:NULL],
                           firstAttributes);
     [self assertLayout:layout hasUniformAttributesInRange:range];
     [self assertLayoutHasNoRunBoundaryInsideRange:layout range:range];
 
-    XCTAssertEqualObjects([source attributesAtIndex:0 effectiveRange:NULL],
-                          firstAttributes,
-                          @"YYTextLayout must not mutate source attributes");
-    XCTAssertEqualObjects([source attributesAtIndex:location effectiveRange:NULL],
-                          splitAttributes,
-                          @"YYTextLayout must not mutate source attributes");
-    XCTAssertNotEqualObjects(firstAttributes, splitAttributes);
+    [locations enumerateObjectsUsingBlock:^(NSNumber *location,
+                                             NSUInteger index,
+                                             BOOL *stop) {
+        (void)stop;
+        XCTAssertEqualObjects(
+            [source attributesAtIndex:location.unsignedIntegerValue
+                       effectiveRange:NULL],
+            originalAttributes[index],
+            @"YYTextLayout must not mutate source attributes");
+    }];
     XCTAssertEqualObjects(source.string, originalString);
     XCTAssertEqualObjects(layout.text.string, originalString);
     XCTAssertEqualObjects(
@@ -97,6 +117,21 @@
     XCTAssertEqualObjects(
         [layout.text.string dataUsingEncoding:NSUTF32LittleEndianStringEncoding],
         originalScalars);
+    return layout;
+}
+
+- (void)assertNormalizesSplitComposedString:(NSString *)string
+                            atUTF16Location:(NSUInteger)location {
+    NSMutableAttributedString *source =
+        [self splitText:string atUTF16Location:location];
+    NSRange range =
+        [string rangeOfComposedCharacterSequenceAtIndex:0];
+
+    XCTAssertTrue(NSEqualRanges(range, NSMakeRange(0, string.length)));
+    [self assertNormalizesSource:source
+                  composedRange:range
+       sourceAttributeLocations:@[@0, @(location)]
+                    layoutRange:NSMakeRange(0, source.length)];
 }
 
 - (void)testNormalizesAttributeBoundaryInsideSurrogatePair {
@@ -122,6 +157,39 @@
                                        atIndex:2
                                 effectiveRange:NULL],
                              @"YYTextLayout must not mutate the source string");
+}
+
+- (void)testNormalizesJoinedEmojiWorkaroundBoundaryAcrossTrailingVariationSelector {
+    NSString *string = @"👨‍👩‍👧‍👦️";
+    NSMutableAttributedString *source = [self splitText:string atUTF16Location:2];
+    [source yy_setClearColorToJoinedEmoji];
+    [source setAttributes:@{
+        NSFontAttributeName : [UIFont systemFontOfSize:18],
+        NSForegroundColorAttributeName : UIColor.grayColor,
+        NSBackgroundColorAttributeName : UIColor.yellowColor,
+    } range:NSMakeRange(2, 3)];
+    [source setAttributes:@{
+        NSFontAttributeName : [UIFont systemFontOfSize:24],
+        NSForegroundColorAttributeName : UIColor.blueColor,
+        NSKernAttributeName : @2,
+    } range:NSMakeRange(7, 2)];
+
+    NSRange range = [string rangeOfComposedCharacterSequenceAtIndex:0];
+    XCTAssertEqual(string.length, 12u);
+    XCTAssertTrue(NSEqualRanges(range, NSMakeRange(0, string.length)));
+    XCTAssertEqualObjects([source attribute:NSForegroundColorAttributeName
+                                    atIndex:0
+                             effectiveRange:NULL],
+                          UIColor.clearColor);
+    XCTAssertNotEqualObjects([source attribute:NSForegroundColorAttributeName
+                                       atIndex:11
+                                effectiveRange:NULL],
+                             UIColor.clearColor);
+
+    [self assertNormalizesSource:source
+                  composedRange:range
+       sourceAttributeLocations:@[@0, @2, @5, @7, @9, @11]
+                    layoutRange:NSMakeRange(0, source.length)];
 }
 
 - (void)testNormalizesZeroWidthJoinerSequence {
@@ -184,6 +252,49 @@
                                           atIndex:second.location
                                    effectiveRange:NULL],
                           UIColor.blueColor);
+}
+
+- (void)testNormalizesComposedSequenceInBoundaryAlignedNonFullRange {
+    NSString *string = @"A🅰️B";
+    NSRange range = [string rangeOfComposedCharacterSequenceAtIndex:1];
+    NSMutableAttributedString *source =
+        [self splitText:string atUTF16Location:range.location + 2];
+
+    YYTextLayout *layout =
+        [self assertNormalizesSource:source
+                       composedRange:range
+            sourceAttributeLocations:@[@(range.location),
+                                       @(range.location + 2)]
+                         layoutRange:range];
+
+    XCTAssertTrue(NSEqualRanges(layout.range, range));
+    XCTAssertTrue(NSEqualRanges(layout.visibleRange, range));
+}
+
+- (void)testEmptyTextPassesThroughLayoutRange {
+    NSAttributedString *source =
+        [[NSAttributedString alloc] initWithString:@""];
+    YYTextLayout *layout = [self layoutForText:source range:NSMakeRange(0, 0)];
+
+    XCTAssertEqualObjects(layout.text.string, source.string);
+    XCTAssertEqual(layout.text.length, 0u);
+    XCTAssertEqual(layout.lines.count, 0u);
+    XCTAssertTrue(NSEqualRanges(layout.range, NSMakeRange(0, 0)));
+}
+
+- (void)testSingleUTF16UnitPassesThroughLayoutRange {
+    NSMutableAttributedString *source =
+        [self splitText:@"A" atUTF16Location:1];
+    NSDictionary *sourceAttributes =
+        [source attributesAtIndex:0 effectiveRange:NULL];
+    YYTextLayout *layout = [self layoutForText:source range:NSMakeRange(0, 1)];
+
+    XCTAssertEqualObjects(layout.text.string, source.string);
+    XCTAssertEqualObjects([layout.text attributesAtIndex:0 effectiveRange:NULL],
+                          sourceAttributes);
+    XCTAssertEqualObjects([source attributesAtIndex:0 effectiveRange:NULL],
+                          sourceAttributes);
+    XCTAssertTrue(NSEqualRanges(layout.range, NSMakeRange(0, 1)));
 }
 
 - (void)testPreservesYYTextAttachmentAttributes {

@@ -431,9 +431,6 @@ static void YYTextNormalizeComposedCharacterAttributes(NSMutableAttributedString
     container = container.copy;
     if (!text || !container) return nil;
     if (range.location + range.length > text.length) return nil;
-    YYTextNormalizeComposedCharacterAttributes((NSMutableAttributedString *)text);
-    container->_readonly = YES;
-    maximumNumberOfRows = container.maximumNumberOfRows;
     
     // CoreText bug when draw joined emoji since iOS 8.3.
     // See -[NSMutableAttributedString setClearColorToJoinedEmoji] for more information.
@@ -454,6 +451,10 @@ static void YYTextNormalizeComposedCharacterAttributes(NSMutableAttributedString
     if (needFixJoinedEmojiBug) {
         [((NSMutableAttributedString *)text) yy_setClearColorToJoinedEmoji];
     }
+    // Keep normalization as the final pre-layout attributed-string mutation.
+    YYTextNormalizeComposedCharacterAttributes((NSMutableAttributedString *)text);
+    container->_readonly = YES;
+    maximumNumberOfRows = container.maximumNumberOfRows;
     
     layout = [[YYTextLayout alloc] _init];
     layout.text = text;

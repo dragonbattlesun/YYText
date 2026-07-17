@@ -59,6 +59,54 @@
     }
 }
 
+- (void)assertNormalizesSplitComposedString:(NSString *)string
+                            atUTF16Location:(NSUInteger)location {
+    NSString *originalString = [string copy];
+    NSData *originalScalars =
+        [originalString dataUsingEncoding:NSUTF32LittleEndianStringEncoding];
+    NSMutableAttributedString *source =
+        [self splitText:originalString atUTF16Location:location];
+    NSDictionary *firstAttributes =
+        [source attributesAtIndex:0 effectiveRange:NULL];
+    NSDictionary *splitAttributes =
+        [source attributesAtIndex:location effectiveRange:NULL];
+
+    YYTextLayout *layout = [self layoutForText:source];
+    NSRange range =
+        [originalString rangeOfComposedCharacterSequenceAtIndex:0];
+
+    XCTAssertTrue(NSEqualRanges(range, NSMakeRange(0, originalString.length)));
+    XCTAssertEqualObjects([layout.text attributesAtIndex:range.location
+                                           effectiveRange:NULL],
+                          firstAttributes);
+    [self assertLayout:layout hasUniformAttributesInRange:range];
+    [self assertLayoutHasNoRunBoundaryInsideRange:layout range:range];
+
+    XCTAssertEqualObjects([source attributesAtIndex:0 effectiveRange:NULL],
+                          firstAttributes,
+                          @"YYTextLayout must not mutate source attributes");
+    XCTAssertEqualObjects([source attributesAtIndex:location effectiveRange:NULL],
+                          splitAttributes,
+                          @"YYTextLayout must not mutate source attributes");
+    XCTAssertNotEqualObjects(firstAttributes, splitAttributes);
+    XCTAssertEqualObjects(source.string, originalString);
+    XCTAssertEqualObjects(layout.text.string, originalString);
+    XCTAssertEqualObjects(
+        [source.string dataUsingEncoding:NSUTF32LittleEndianStringEncoding],
+        originalScalars);
+    XCTAssertEqualObjects(
+        [layout.text.string dataUsingEncoding:NSUTF32LittleEndianStringEncoding],
+        originalScalars);
+}
+
+- (void)testNormalizesAttributeBoundaryInsideSurrogatePair {
+    [self assertNormalizesSplitComposedString:@"😀" atUTF16Location:1];
+}
+
+- (void)testNormalizesDecomposedCharacterSequence {
+    [self assertNormalizesSplitComposedString:@"e\u0301" atUTF16Location:1];
+}
+
 - (void)testNormalizesEmojiVariationSelectorSequence {
     NSMutableAttributedString *source = [self splitText:@"🅰️" atUTF16Location:2];
     YYTextLayout *layout = [self layoutForText:source];

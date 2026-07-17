@@ -1966,7 +1966,7 @@ fail:
     YYTextLine *startLine = _lines[startLineIndex];
     YYTextLine *endLine = _lines[endLineIndex];
     NSMutableArray *lines = [NSMutableArray new];
-    for (NSUInteger i = startLineIndex; i <= startLineIndex; i++) {
+    for (NSUInteger i = startLineIndex; i <= endLineIndex; i++) {
         YYTextLine *line = _lines[i];
         if (line.row != startLine.row) break;
         [lines addObject:line];

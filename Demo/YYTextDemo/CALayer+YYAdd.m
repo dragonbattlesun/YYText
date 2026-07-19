@@ -16,12 +16,14 @@
 @implementation CALayer (YYAdd)
 
 - (UIImage *)snapshotImage {
-    UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [self renderInContext:context];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
+    CGSize size = self.bounds.size;
+    if (size.width <= 0 || size.height <= 0) return nil;
+    UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+    format.opaque = self.opaque;
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
+    return [renderer imageWithActions:^(UIGraphicsImageRendererContext *rendererContext) {
+        [self renderInContext:rendererContext.CGContext];
+    }];
 }
 
 - (NSData *)snapshotPDF {

@@ -85,7 +85,7 @@ static CGColorRef YYTextGetCGColor(CGColorRef color) {
     @package
     BOOL _readonly; ///< used only in YYTextLayout.implementation
     dispatch_semaphore_t _lock;
-    
+
     CGSize _size;
     UIEdgeInsets _insets;
     UIBezierPath *_path;
@@ -426,7 +426,7 @@ static void YYTextNormalizeComposedCharacterAttributes(NSMutableAttributedString
     NSUInteger maximumNumberOfRows = 0;
     BOOL constraintSizeIsExtended = NO;
     CGRect constraintRectBeforeExtended = {0};
-    
+
     text = text.mutableCopy;
     container = container.copy;
     if (!text || !container) return nil;
@@ -453,6 +453,19 @@ static void YYTextNormalizeComposedCharacterAttributes(NSMutableAttributedString
     }
     // Keep normalization as the final pre-layout attributed-string mutation.
     YYTextNormalizeComposedCharacterAttributes((NSMutableAttributedString *)text);
+
+    // When the container uses YYText's own truncation, force CoreText to wrap
+    // instead of truncating. Otherwise CoreText may add its own truncation token
+    // and the result contains duplicate markers (e.g. both tail and middle).
+    if (container.truncationType != YYTextTruncationTypeNone) {
+        NSLineBreakMode lineBreakMode = ((NSMutableAttributedString *)text).yy_lineBreakMode;
+        if (lineBreakMode == NSLineBreakByTruncatingHead ||
+            lineBreakMode == NSLineBreakByTruncatingTail ||
+            lineBreakMode == NSLineBreakByTruncatingMiddle) {
+            ((NSMutableAttributedString *)text).yy_lineBreakMode = NSLineBreakByWordWrapping;
+        }
+    }
+
     container->_readonly = YES;
     maximumNumberOfRows = container.maximumNumberOfRows;
     

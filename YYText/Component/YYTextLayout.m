@@ -54,6 +54,13 @@ static CGColorRef YYTextGetCGColor(CGColorRef color) {
     return color;
 }
 
+static BOOL YYTextRequiresManualStandardUnderlineDrawing(void) {
+    if (@available(iOS 18.0, *)) {
+        return YES;
+    }
+    return NO;
+}
+
 @implementation YYTextLinePositionSimpleModifier
 - (void)modifyLines:(NSArray *)lines fromText:(NSAttributedString *)text inContainer:(YYTextContainer *)container {
     if (container.verticalForm) {
@@ -885,7 +892,11 @@ static void YYTextNormalizeComposedCharacterAttributes(NSMutableAttributedString
             if (attrs[YYTextBlockBorderAttributeName]) layout.needDrawBlockBorder = YES;
             if (attrs[YYTextBackgroundBorderAttributeName]) layout.needDrawBackgroundBorder = YES;
             if (attrs[YYTextShadowAttributeName] || attrs[NSShadowAttributeName]) layout.needDrawShadow = YES;
-            if (attrs[YYTextUnderlineAttributeName]) layout.needDrawUnderline = YES;
+            if (attrs[YYTextUnderlineAttributeName] ||
+                (YYTextRequiresManualStandardUnderlineDrawing() &&
+                 [attrs[NSUnderlineStyleAttributeName] integerValue] > 0)) {
+                layout.needDrawUnderline = YES;
+            }
             if (attrs[YYTextAttachmentAttributeName]) layout.needDrawAttachment = YES;
             if (attrs[YYTextInnerShadowAttributeName]) layout.needDrawInnerShadow = YES;
             if (attrs[YYTextStrikethroughAttributeName]) layout.needDrawStrikethrough = YES;
@@ -2915,9 +2926,17 @@ static void YYTextDrawDecoration(YYTextLayout *layout, CGContextRef context, CGS
             NSDictionary *attrs = (id)CTRunGetAttributes(run);
             YYTextDecoration *underline = attrs[YYTextUnderlineAttributeName];
             YYTextDecoration *strikethrough = attrs[YYTextStrikethroughAttributeName];
+            NSUnderlineStyle standardUnderlineStyle =
+                [attrs[NSUnderlineStyleAttributeName] integerValue];
             
             BOOL needDrawUnderline = NO, needDrawStrikethrough = NO;
             if ((type & YYTextDecorationTypeUnderline) && underline.style > 0) {
+                needDrawUnderline = YES;
+            }
+            if ((type & YYTextDecorationTypeUnderline) &&
+                !needDrawUnderline &&
+                YYTextRequiresManualStandardUnderlineDrawing() &&
+                standardUnderlineStyle > NSUnderlineStyleNone) {
                 needDrawUnderline = YES;
             }
             if ((type & YYTextDecorationTypeStrikethrough) && strikethrough.style > 0) {
@@ -2957,13 +2976,23 @@ static void YYTextDrawDecoration(YYTextLayout *layout, CGContextRef context, CGS
             }
             
             if (needDrawUnderline) {
-                CGColorRef color = underline.color.CGColor;
+                BOOL usesCustomUnderline = underline.style > 0;
+                YYTextLineStyle underlineStyle = usesCustomUnderline
+                    ? underline.style
+                    : (YYTextLineStyle)standardUnderlineStyle;
+                CGColorRef color = usesCustomUnderline ? underline.color.CGColor : NULL;
+                if (!color && !usesCustomUnderline) {
+                    color = (__bridge CGColorRef)(attrs[NSUnderlineColorAttributeName]);
+                    color = YYTextGetCGColor(color);
+                }
                 if (!color) {
                     color = (__bridge CGColorRef)(attrs[(id)kCTForegroundColorAttributeName]);
                     color = YYTextGetCGColor(color);
                 }
-                CGFloat thickness = (underline.width != nil) ? underline.width.floatValue : lineThickness;
-                YYTextShadow *shadow = underline.shadow;
+                CGFloat thickness = (usesCustomUnderline && underline.width != nil)
+                    ? underline.width.floatValue
+                    : lineThickness;
+                YYTextShadow *shadow = usesCustomUnderline ? underline.shadow : nil;
                 while (shadow) {
                     if (!shadow.color) {
                         shadow = shadow.subShadow;
@@ -2977,12 +3006,12 @@ static void YYTextDrawDecoration(YYTextLayout *layout, CGContextRef context, CGS
                             CGContextSetShadowWithColor(context, offset, shadow.radius, shadow.color.CGColor);
                             CGContextSetBlendMode(context, shadow.blendMode);
                             CGContextTranslateCTM(context, offsetAlterX, 0);
-                            YYTextDrawLineStyle(context, length, thickness, underline.style, underlineStart, color, isVertical);
+                            YYTextDrawLineStyle(context, length, thickness, underlineStyle, underlineStart, color, isVertical);
                         } CGContextRestoreGState(context);
                     } CGContextRestoreGState(context);
                     shadow = shadow.subShadow;
                 }
-                YYTextDrawLineStyle(context, length, thickness, underline.style, underlineStart, color, isVertical);
+                YYTextDrawLineStyle(context, length, thickness, underlineStyle, underlineStart, color, isVertical);
             }
             
             if (needDrawStrikethrough) {
